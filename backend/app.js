@@ -24,7 +24,9 @@ const messageRoutes = require('./routes/messageRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const seanceRoutes =   require('./routes/seanceRoutes');
 const authLogMiddleware = require("./middlewares/authLogMiddleware");
-const announcementRoutes = require('./routes/announcementRoutes');// === APP EXPRESS ===
+const announcementRoutes = require('./routes/announcementRoutes');
+const dashboardRoutes = require('./routes/dashboardRoutes');
+// === APP EXPRESS ===
 const courseMaterialRoutes = require("./routes/courseMaterialsRoutes");
 
 var app = express();
@@ -84,6 +86,7 @@ app.use('/demande', demandeRoutes);
 app.use('/message', messageRoutes);
 app.use('/notification', notificationRoutes);
 app.use('/announcement', announcementRoutes);
+app.use('/dashboard', dashboardRoutes);
 app.use("/course-material", courseMaterialRoutes);
 app.use('/seance', seanceRoutes);
 // === ERREURS ===

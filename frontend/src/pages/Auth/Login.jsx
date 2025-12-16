@@ -1,4 +1,5 @@
 import { useState, useContext } from "react";
+import { getDashboardStats } from "@/services/dashboardService";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -76,12 +77,18 @@ export default function Login() {
       if (data.user) login(data.user);
       if (data.token) localStorage.setItem("token", data.token);
 
-      setTimeout(() => {
+      setTimeout(async () => {
         const role = data.user?.role;
         switch (role) {
-          case "admin":
-            navigate("/admin/", { replace: true });
+          case "admin": {
+            try {
+              const dashboardData = await getDashboardStats();
+              navigate("/admin/", { replace: true, state: { dashboardData } });
+            } catch {
+              navigate("/admin/", { replace: true });
+            }
             break;
+          }
           case "enseignant":
             navigate("/teacher/", { replace: true });
             break;

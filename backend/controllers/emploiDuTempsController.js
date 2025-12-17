@@ -173,12 +173,13 @@ module.exports.getAllEmplois = async (req, res) => {
         })
         .populate("classe", "nom annee specialisation");
     } else if (req.user.role === "enseignant") {
-      emplois = await EmploiDuTemps.find({ "seances.cours.enseignant": req.user.id })
+      emplois = await EmploiDuTemps.find()
         .populate({
           path: "seances",
           select: "jourSemaine heureDebut heureFin salle typeCours cours",
           populate: {
             path: "cours",
+            match: { enseignant: req.user.id },
             select: "nom code enseignant",
             populate: {
               path: "enseignant",
@@ -187,6 +188,9 @@ module.exports.getAllEmplois = async (req, res) => {
           }
         })
         .populate("classe", "nom annee specialisation");
+
+      // Filter out emplois with no matching seances
+      emplois = emplois.filter(emploi => emploi.seances && emploi.seances.some(seance => seance.cours !== null));
     } else {
       emplois = await EmploiDuTemps.find()
         .populate({

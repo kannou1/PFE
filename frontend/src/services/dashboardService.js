@@ -13,3 +13,15 @@ export async function getDashboardStats() {
     throw new Error("Failed to fetch dashboard stats: " + error.message);
   }
 }
+
+// Get emplois du temps for teacher
+export async function getEmploisDuTemps() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/emplois`, {
+      withCredentials: true
+    });
+    return response.data;
+  } catch (error) {
+    throw new Error("Failed to fetch emplois du temps: " + error.message);
+  }
+}

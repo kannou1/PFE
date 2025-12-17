@@ -51,6 +51,7 @@ const UserAvatar = ({ user, size = 'default' }) => {
 export default function AdminUsers() {
   const [searchTerm, setSearchTerm] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
+  const [classFilter, setClassFilter] = useState('all');
   const [allUsers, setAllUsers] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -99,7 +100,13 @@ export default function AdminUsers() {
 
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, roleFilter]);
+  }, [searchTerm, roleFilter, classFilter]);
+
+  useEffect(() => {
+    if (roleFilter !== 'etudiant') {
+      setClassFilter('all');
+    }
+  }, [roleFilter]);
 
   const fetchUsers = async () => {
     try {
@@ -135,6 +142,10 @@ export default function AdminUsers() {
   const filteredUsers = useMemo(() => {
     return (Array.isArray(allUsers) ? allUsers : []).filter(user => {
       if (roleFilter !== 'all' && user.role !== roleFilter) return false;
+      if (roleFilter === 'etudiant' && classFilter !== 'all') {
+        const userClassId = typeof user.classe === 'object' ? user.classe._id : user.classe;
+        if (userClassId !== classFilter) return false;
+      }
       if (searchTerm) {
         const term = searchTerm.toLowerCase();
         const fullName = `${user.prenom || ''} ${user.nom || ''}`.toLowerCase();
@@ -142,7 +153,7 @@ export default function AdminUsers() {
       }
       return true;
     });
-  }, [allUsers, searchTerm, roleFilter]);
+  }, [allUsers, searchTerm, roleFilter, classFilter]);
 
   const totalPages = Math.ceil((filteredUsers || []).length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -555,6 +566,21 @@ export default function AdminUsers() {
                     <SelectItem value="etudiant">Student</SelectItem>
                   </SelectContent>
                 </Select>
+                {roleFilter === 'etudiant' && (
+                  <Select value={classFilter} onValueChange={setClassFilter}>
+                    <SelectTrigger className="w-full sm:w-[160px] lg:w-[180px] h-9 sm:h-10 text-sm">
+                      <SelectValue placeholder="Filter by class" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Classes</SelectItem>
+                      {(Array.isArray(allClasses) ? allClasses : []).map((classe) => (
+                        <SelectItem key={classe._id} value={classe._id} className="text-sm">
+                          {classe.nom} - {classe.annee} {classe.specialisation}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <span className="text-muted-foreground text-xs sm:text-sm whitespace-nowrap">Show:</span>
@@ -603,7 +629,7 @@ export default function AdminUsers() {
                     </div>
                     <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap" onClick={(e) => e.stopPropagation()}>
                       <Badge className={`${getRoleBadgeColor(user.role)} text-xs px-2 py-0.5`}>
-                        {getRoleLabel(user.role)}
+                        {getRoleLabel(user.role)}{user.role === 'etudiant' && user.classe ? ` - ${typeof user.classe === 'object' ? user.classe.nom : (allClasses.find(c => c._id === user.classe)?.nom || 'Unknown')}` : ''}
                       </Badge>
                       <Badge className={`text-xs px-2 py-0.5 ${user.Status ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-slate-600 hover:bg-slate-700'}`}>
                         {user.Status ? 'Active' : 'Inactive'}

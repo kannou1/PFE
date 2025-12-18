@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Send, Bot, User, Trash2, MessageSquare, Sparkles, Plus, Edit2, Check, ChevronLeft, ChevronRight, Search, Upload } from "lucide-react";
+import { sendChatMessage, uploadFile } from "../../services/chatService";
 
 const useTheme = () => {
   const [theme, setTheme] = useState(() => {
@@ -238,11 +239,11 @@ const ChatPage = () => {
     setIsLoading(true);
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      const response = await sendChatMessage(inputMessage, userId);
 
       const aiMessage = {
         sender: "ai",
-        text: "This is a demo response. In production, this would connect to your AI backend.",
+        text: response.answer || response.message || "I received your message but couldn't generate a response.",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
 
@@ -250,6 +251,7 @@ const ChatPage = () => {
       setMessages(finalMessages);
       await saveConversation(currentConversationId, finalMessages);
     } catch (error) {
+      console.error("Chat error:", error);
       const errorMessage = {
         sender: "ai",
         text: "Sorry, I'm having trouble connecting right now. Please try again later.",
@@ -273,12 +275,53 @@ const ChatPage = () => {
     }
   };
 
-  const handleFileSelect = (e) => {
+  const handleFileSelect = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setSelectedFile(file);
-      // Here you can add logic to upload the file or process it
-      console.log("Selected file:", file.name);
+      setIsLoading(true);
+
+      try {
+        // Upload the file and get AI analysis
+        const response = await uploadFile(file);
+
+        // Create a user message indicating file upload
+        const userMessage = {
+          sender: "user",
+          text: `Uploaded file: ${file.name}`,
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        };
+
+        // Create AI response with file analysis
+        const aiMessage = {
+          sender: "ai",
+          text: response.answer || "I've analyzed your file and provided a summary above.",
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        };
+
+        const newMessages = [...messages, userMessage, aiMessage];
+        setMessages(newMessages);
+        await saveConversation(currentConversationId, newMessages);
+      } catch (error) {
+        console.error("File upload error:", error);
+        const errorMessage = {
+          sender: "ai",
+          text: "Sorry, I couldn't process your file. Please try again.",
+          timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          isError: true,
+        };
+
+        const newMessages = [...messages, errorMessage];
+        setMessages(newMessages);
+        await saveConversation(currentConversationId, newMessages);
+      } finally {
+        setIsLoading(false);
+        setSelectedFile(null);
+        // Clear the file input
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+      }
     }
   };
 

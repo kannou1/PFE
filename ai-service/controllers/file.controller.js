@@ -35,8 +35,8 @@ function sanitizeContent(input) {
   text = text.replace(/\s+/g, ' ').trim();
   
   // Limit content size to avoid overwhelming the API
-  if (text.length > 10000) {
-    text = text.substring(0, 10000) + '... (content truncated)';
+  if (text.length > 5000) {
+    text = text.substring(0, 5000) + '... (content truncated)';
   }
   
   return text;
@@ -122,7 +122,14 @@ exports.uploadFile = [
       ];
 
       console.log(`📤 Sending to Ollama...`);
-      const answer = await callLLM(messages);
+      let answer;
+      try {
+        answer = await callLLM(messages);
+      } catch (llmErr) {
+        console.error('❌ LLM error:', llmErr);
+        fs.unlinkSync(file.path);
+        return res.status(500).json({ error: 'AI processing error', details: llmErr.message || llmErr.toString() });
+      }
 
       fs.unlinkSync(file.path); // cleanup
       res.json({ answer });

@@ -6,7 +6,7 @@ app.use(cors());
 app.use(express.json());
 
 const fileRoutes = require('./routes/file');
-app.use('/file', fileRoutes);
+app.use('/chat', fileRoutes);
 
 
 

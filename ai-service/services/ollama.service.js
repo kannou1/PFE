@@ -36,7 +36,7 @@ async function callLLM(messages) {
   }
 
   const data = await res.json();
-  
+
   if (!data.choices || !data.choices[0] || !data.choices[0].message) {
     throw new Error('Invalid response format from Ollama');
   }

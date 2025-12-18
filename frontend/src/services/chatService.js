@@ -1,4 +1,4 @@
-import axios from "axios";
+  import axios from "axios";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
 const AI_SERVICE_URL = import.meta.env.VITE_AI_SERVICE_URL || "http://localhost:7000";
@@ -24,7 +24,7 @@ export async function uploadFile(file) {
     const formData = new FormData();
     formData.append('file', file);
 
-    const response = await axios.post(`${AI_SERVICE_URL}/upload`, formData, {
+    const response = await axios.post(`${AI_SERVICE_URL}/chat/upload`, formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
       },

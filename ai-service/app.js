@@ -5,6 +5,11 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+const fileRoutes = require('./routes/file');
+app.use('/file', fileRoutes);
+
+
+
 app.use("/chat", require("./routes/chat.routes"));
 
 app.listen(7000, () =>

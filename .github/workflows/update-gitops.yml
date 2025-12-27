@@ -1,0 +1,38 @@
+name: CD - Update GitOps Manifests
+
+on:
+  workflow_run:
+    workflows: ["CI - Test, Build, Push Images"]
+    types: [completed]
+
+jobs:
+  update-gitops:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout GitOps repo
+        uses: actions/checkout@v4
+        with:
+          repository: kannou1/gitops-repo
+          token: ${{ secrets.GITOPS_TOKEN }}
+          ref: main
+
+      - name: Set image tags to SHA
+        run: |
+          SHA="${{ github.event.workflow_run.head_sha }}"
+
+          # backend
+          sed -i "s|image: ghcr.io/kannou1/pfe-backend:.*|image: ghcr.io/kannou1/pfe-backend:${SHA}|g" k8s/backend/deployment.yaml
+          # frontend
+          sed -i "s|image: ghcr.io/kannou1/pfe-frontend:.*|image: ghcr.io/kannou1/pfe-frontend:${SHA}|g" k8s/frontend/deployment.yaml
+          # ai-service
+          sed -i "s|image: ghcr.io/kannou1/pfe-ai-service:.*|image: ghcr.io/kannou1/pfe-ai-service:${SHA}|g" k8s/ai-service/deployment.yaml
+
+      - name: Commit & push
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add k8s/*/deployment.yaml
+          git commit -m "chore: deploy ${GITHUB_REPOSITORY}@${{ github.event.workflow_run.head_sha }}" || echo "No changes"
+          git push

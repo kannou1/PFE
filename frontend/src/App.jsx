@@ -40,7 +40,7 @@ import TeacherMessages from "./pages/Teacher/Messages";
 import TeacherProfile from "./pages/Teacher/Profile";
 import TeacherNotifications from "./pages/Teacher/Notifications";
 import TeacherAnnouncements from "./pages/Teacher/Announcements";
-import TeacherAssignments from "./pages/Teacher/assignments";
+import TeacherAssignments from "./pages/Teacher/Assignments";
 
 // Student Section
 import StudentLayout from "./pages/Student/Layout";

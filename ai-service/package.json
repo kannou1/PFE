@@ -4,9 +4,10 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon app.js"
-  },
+  "test": "echo \"No tests yet\"",
+  "dev": "nodemon app.js"
+}
+,
   "keywords": [],
   "author": "",
   "license": "ISC",

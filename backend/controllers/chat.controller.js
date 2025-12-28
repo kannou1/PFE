@@ -1,7 +1,7 @@
 // Backend/controllers/chat.controller.js
 const axios = require('axios');
 const mongoose = require('mongoose');
-const Conversation = require('../models/Conversation');
+const Conversation = require('../models/conversation');
 
 const AI_SERVICE_URL = process.env.AI_SERVICE_URL || 'http://localhost:7000';
 

@@ -51,7 +51,7 @@ class AuthService {
     // Persist token + user to secure storage automatically
     await StorageService.instance.saveAuthData(
       token: authResponse.token,
-      user:  authResponse.user,
+      user: authResponse.user,
     );
 
     return authResponse;
@@ -63,9 +63,7 @@ class AuthService {
   // Returns: MessageResponseModel
   // Throws:  Exception with server message on failure
 
-  Future<MessageResponseModel> forgotPassword({
-    required String email,
-  }) async {
+  Future<MessageResponseModel> forgotPassword({required String email}) async {
     final response = await _post(
       '$_usersUrl/forgot-password',
       body: {'email': email},
@@ -86,11 +84,7 @@ class AuthService {
   }) async {
     final response = await _post(
       '$_usersUrl/reset-password',
-      body: {
-        'email':       email,
-        'code':        code,
-        'newPassword': newPassword,
-      },
+      body: {'email': email, 'code': code, 'newPassword': newPassword},
     );
     return MessageResponseModel.fromJson(response);
   }
@@ -118,7 +112,9 @@ class AuthService {
       final data = jsonDecode(response.body) as Map<String, dynamic>;
 
       if (response.statusCode < 200 || response.statusCode >= 300) {
-        throw Exception(data['message'] ?? 'Request failed (${response.statusCode})');
+        throw Exception(
+          data['message'] ?? 'Request failed (${response.statusCode})',
+        );
       }
 
       return data;
@@ -126,7 +122,40 @@ class AuthService {
       rethrow; // Already an Exception — let the screen handle it
     } catch (e) {
       // Network errors (SocketException, etc.)
-      throw Exception('Unable to connect to server. Please check your connection.');
+      throw Exception(
+        'Unable to connect to server. Please check your connection.',
+      );
     }
+  }
+
+  Future<AuthResult> verifyCode({
+    required String email,
+    required String code,
+  }) async {
+    final response = await http.post(
+      Uri.parse('$_usersUrl/verify-code'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'code': code}),
+    );
+
+    final data = jsonDecode(response.body);
+
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw Exception(data['message']);
+    }
+
+    return AuthResult.fromJson(data);
+  }
+}
+
+class AuthResult {
+  final String? message;
+
+  AuthResult({this.message});
+
+  factory AuthResult.fromJson(Map<String, dynamic> json) {
+    return AuthResult(
+      message: json['message'] as String?,
+    );
   }
 }

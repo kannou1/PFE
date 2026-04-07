@@ -1,15 +1,10 @@
-# Mobile Models & Services Completion TODO
+# Fix Login Null Type Cast Error on Phone
 
-## Status: ✅ Steps 1-4 Complete (All models & services created)
+## Steps:
+- [x] 1. Analyze files and create plan (done)
+- [x] 2. Update UserModel.fromJson with safe null parsing for `sexe`, `role`, `email`, etc. using `??` defaults
+- [ ] 3. Test login on phone/emulator 
+- [ ] 4. Check if backend response needs adjustment (curl /users/login)
+- [ ] 5. Complete task
 
-1. ✅ api_service.dart
-2. ✅ user_model.dart
-3. ✅ All 11 models
-4. ✅ All 11 services: classe, cours, announcement, demande, examen, note, notification, presence, seance, course_material, emploi_du_temps
-5. **Integrate** - Update screens/admin/users.dart to use ClasseService/UserService real data (replace mocks).
-6. **Test** - Run app, login, check admin users screen loads real data.
-
-**Final phase**: Integration & demo command.
-
-
-
+**Status:** Ready for code update

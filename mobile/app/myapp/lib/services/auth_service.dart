@@ -20,11 +20,14 @@ class AuthService {
   AuthService._();
   static final AuthService instance = AuthService._();
 
+  static UserModel? _currentUser;
+
   // ── Config ──────────────────────────────────────────────────────────────────
 
-  static const String _baseUrl = 'http://10.0.2.2:5000';
+  //static const String _baseUrl = 'http://10.0.2.2:5000';
   // static const String _baseUrl = 'http://localhost:5000';    // iOS simulator
   // static const String _baseUrl = 'https://your-domain.com'; // production
+   static const String _baseUrl = 'http://192.168.1.165:5000'; // my phone
 
   static const String _usersUrl = '$_baseUrl/users';
 
@@ -54,6 +57,8 @@ class AuthService {
       token: authResponse.token,
       user: authResponse.user,
     );
+_currentUser = authResponse.user;
+    print('AuthService login cached user: ${authResponse.user.fullName} (${authResponse.user.role})');
 
     return authResponse;
   }
@@ -93,7 +98,20 @@ class AuthService {
   // ── Logout ────────────────────────────────────────────────────────────────────
   // Clears local storage — no API call needed (stateless JWT).
 
-  Future<void> logout() => StorageService.instance.clearAll();
+  Future<void> logout() async {
+    await StorageService.instance.clearAll();
+    _currentUser = null;
+  }
+
+  static UserModel? get currentUser => _currentUser;
+
+  static Future<UserModel> getCurrentUser() async {
+    if (_currentUser != null) return _currentUser!;
+    final userJson = await StorageService.instance.getUser();
+    if (userJson == null) throw Exception('No logged in user');
+    _currentUser = UserModel.fromJson(jsonDecode(userJson as String) as Map<String, dynamic>);
+    return _currentUser!;
+  }
 
   // ── Private HTTP helper ───────────────────────────────────────────────────────
   // Sends a POST request, decodes the JSON body, and throws a readable

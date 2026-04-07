@@ -28,7 +28,7 @@
   import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
   import { getUserAuth } from "@/services/userService";
 
-  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://http://192.168.1.165:5000';
 
   const navItems = [
     { path: "", label: "Dashboard", icon: LayoutDashboard },

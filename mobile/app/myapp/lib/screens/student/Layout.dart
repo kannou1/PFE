@@ -5,9 +5,12 @@ import 'package:flutter/material.dart';
 import 'package:EduNex/services/auth_service.dart';
 import 'package:EduNex/screens/Auth/login.dart';
 import '../../services/auth_service.dart';
+import 'package:EduNex/services/storage_service.dart';
 import '../Sidebars/StudentSidebar.dart';
+import '../../services/user_service.dart';
+import '../../models/user_model.dart';
 
-const String _apiBase = 'http://10.0.2.2:5000';
+const String _apiBase = 'http://192.168.1.165:5000';
 
 // ─── Notification Model ───────────────────────────────────────────────────────
 
@@ -36,6 +39,7 @@ class _StudentLayoutState extends State<StudentLayout> {
   String  _currentPath      = '';
   bool    _loggingOut       = false;
   bool    _showLogoutSuccess = false;
+  bool    _loadingUser      = true;
 
   String? _studentName;
   String? _studentEmail;
@@ -57,19 +61,40 @@ class _StudentLayoutState extends State<StudentLayout> {
   // ── Data ───────────────────────────────────────────────────────────────────
 
   Future<void> _loadStudent() async {
+    setState(() => _loadingUser = true);
     try {
-      final user = AuthService.instance.currentUser;
-      final first = (user.prenom ?? '').isNotEmpty ? user.prenom![0].toUpperCase() : '';
-      final last  = (user.nom   ?? '').isNotEmpty ? user.nom![0].toUpperCase()   : '';
-      setState(() {
-        _studentName  = '${user.prenom ?? ''} ${user.nom ?? ''}'.trim();
-        _studentEmail = user.email;
-        _initials     = (first + last).isNotEmpty ? first + last : 'ST';
-        _avatarUrl    = user.imageUser != null
-            ? '$_apiBase/images/${user.imageUser}'
-            : null;
-      });
-    } catch (_) {}
+      UserModel? user;
+      try {
+        user = await getCurrentUser();
+        print('Storage user: ${user?.fullName ?? "null"}');
+      } catch (e) {
+        print('Storage failed, fetching from API: $e');
+      }
+      
+      if (user == null) {
+        // Fallback to API like web getUserAuth
+        user = await UserService.instance.getProfile();
+      print('API user: ${user!.fullName} (${user.role})');
+    }
+    
+    // user is non-null here
+    final u = user!;
+    
+    final first = (u.prenom?.isNotEmpty == true ? u.prenom![0].toUpperCase() : '');
+    final last  = (u.nom?.isNotEmpty == true ? u.nom![0].toUpperCase() : '');
+    setState(() {
+      _studentName  = u.fullName.isNotEmpty ? u.fullName : '${u.prenom ?? ''} ${u.nom ?? ''}'.trim();
+      _studentEmail = u.email.isNotEmpty ? u.email : 'student@edunex.com';
+      _initials     = (first + last).isNotEmpty ? first + last : 'ST';
+      _avatarUrl    = u.imageUser != null && (u.imageUser as String).isNotEmpty
+          ? '$_apiBase/images/${u.imageUser}'
+          : null;
+      _loadingUser = false;
+    });
+    } catch (e) {
+      print('Full load error: $e');
+      setState(() => _loadingUser = false);
+    }
   }
 
   Future<void> _fetchNotifications() async {
@@ -156,13 +181,16 @@ class _StudentLayoutState extends State<StudentLayout> {
                 studentName:      _studentName,
                 studentEmail:     _studentEmail,
                 avatarUrl:        _avatarUrl,
+                user:             user,
               ),
               Expanded(
                 child: Column(
                   children: [
                     _buildTopBar(isDark),
-                    Expanded(
-                      child: _buildPage(),
+  Expanded(
+                      child: _loadingUser 
+                        ? const Center(child: CircularProgressIndicator())
+                        : _buildPage(),
                     ),
                   ],
                 ),

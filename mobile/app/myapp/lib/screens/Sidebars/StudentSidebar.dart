@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../models/user_model.dart';
 
 // ─── Nav Item Model ───────────────────────────────────────────────────────────
 
@@ -32,8 +33,9 @@ class StudentSidebar extends StatefulWidget {
 
   // Student data (pass from parent or fetch inside)
   final String? studentName;
-  final String? studentEmail;
-  final String? avatarUrl;
+final String? studentEmail;
+final String? avatarUrl;
+  final UserModel? user;
 
   const StudentSidebar({
     super.key,
@@ -44,7 +46,9 @@ class StudentSidebar extends StatefulWidget {
     this.studentName,
     this.studentEmail,
     this.avatarUrl,
+    this.user,
   });
+
 
   @override
   State<StudentSidebar> createState() => _StudentSidebarState();
@@ -61,13 +65,14 @@ class _StudentSidebarState extends State<StudentSidebar>
 
   // ── Theme colors mirroring the React design ──────────────────────────────────
 
-  static const _primary   = Color(0xFF6366F1); // indigo
+static const _primary   = Color(0xFF6366F1); // indigo
   static const _secondary = Color(0xFF8B5CF6); // violet
   static const _bg        = Color(0xFF0F1117);
   static const _surface   = Color(0xFF1A1D27);
   static const _border    = Color(0xFF2A2D3A);
   static const _textPrimary   = Color(0xFFE2E8F0);
   static const _textSecondary = Color(0xFF94A3B8);
+  static const _accent = Color(0xFF10B981);
 
   @override
   void initState() {
@@ -372,8 +377,8 @@ class _StudentSidebarState extends State<StudentSidebar>
                     crossAxisAlignment: CrossAxisAlignment.start,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text(
-                        widget.studentName ?? 'Student',
+  Text(
+                        widget.user?.fullName ?? widget.studentName ?? 'Loading...',
                         style: const TextStyle(
                           fontSize: 13,
                           fontWeight: FontWeight.w600,
@@ -381,8 +386,8 @@ class _StudentSidebarState extends State<StudentSidebar>
                         ),
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        widget.studentEmail ?? 'student@edunex.com',
+  Text(
+                        widget.user?.email ?? widget.studentEmail ?? 'student@edunex.com',
                         style: const TextStyle(
                           fontSize: 11,
                           color: _textSecondary,

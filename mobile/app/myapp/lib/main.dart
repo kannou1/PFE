@@ -11,6 +11,7 @@ import 'package:EduNex/screens/test_theme/test_text.dart';
 import 'package:EduNex/utils/theme/theme.dart';
 
 import 'screens/admin/profile.dart';
+import 'screens/student/Layout.dart' as student_layout;
 import 'screens/admin/users.dart';
 
 void main() {
@@ -25,11 +26,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      title: 'Flutter Demo',
+      title: 'EduNex',
       themeMode: ThemeMode.system,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      home: const LoginScreen(),
+      initialRoute: '/',
+      routes: {
+        '/': (context) => const LoginScreen(),
+        '/student': (context) => student_layout.StudentLayout(),
+        '/teacher': (context) => Placeholder(child: Text('Teacher Dashboard')),
+        '/admin': (context) => Placeholder(child: Text('Admin Dashboard')),
+        '/admin/users': (context) => const AdminUsersScreen(),
+        '/admin/profile': (context) => const AdminProfileScreen(),
+      },
     );
   }
 }

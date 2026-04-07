@@ -22,6 +22,14 @@ class UserService {
     );
   }
 
+  // Get current profile (like web getUserAuth)
+  Future<UserModel> getProfile() async {
+    return ApiService.instance.get(
+      '/users/profile',
+      UserModel.fromJson,
+    );
+  }
+
   // Update profile
   Future<UserModel> updateProfile(Map<String, dynamic> data) async {
     return ApiService.instance.put(

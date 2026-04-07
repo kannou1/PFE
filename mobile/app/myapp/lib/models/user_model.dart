@@ -59,12 +59,12 @@ class UserModel {
     final role = json['role'] ?? 'etudiant';
 
     return UserModel(
-      id: id as String,
-      prenom: json['prenom'] as String,
-      nom: json['nom'] as String,
-      sexe: json['sexe'] as String,
-      email: json['email'] as String,
-      role: role as String,
+      id: id as String? ?? '',
+      prenom: json['prenom'] as String? ?? '',
+      nom: json['nom'] as String? ?? '',
+      sexe: json['sexe'] as String? ?? 'Unknown',
+      email: json['email'] as String? ?? '',
+      role: json['role'] as String? ?? 'etudiant',
       imageUser: json['image_User'],
       verified: json['verified'] as bool? ?? false,
       status: json['Status'] as bool? ?? false,

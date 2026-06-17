@@ -24,10 +24,10 @@ class AuthService {
 
   // ── Config ──────────────────────────────────────────────────────────────────
 
-  //static const String _baseUrl = 'http://10.0.2.2:5000';
+ // static const String _baseUrl = 'http://10.0.2.2:5000'; // for emulator
   // static const String _baseUrl = 'http://localhost:5000';    // iOS simulator
   // static const String _baseUrl = 'https://your-domain.com'; // production
-   static const String _baseUrl = 'http://192.168.1.211:5000'; // my phone
+  static const String _baseUrl = 'http://192.168.1.211:5000'; // my phone
 
   static const String _usersUrl = '$_baseUrl/users';
 

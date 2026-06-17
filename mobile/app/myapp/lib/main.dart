@@ -5,6 +5,12 @@ import 'package:EduNex/utils/theme/theme.dart';
 
 import 'screens/student/Layout.dart' as student_layout;
 import 'screens/student/profile.dart';
+import 'screens/student/courses.dart';
+import 'screens/student/course_details.dart';
+import 'screens/student/exams.dart';
+import 'screens/student/timetable.dart';
+import 'screens/student/student_demandes_page.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -26,8 +32,12 @@ class MyApp extends StatelessWidget {
         '/': (context) => const LoginScreen(),
         '/student': (context) => student_layout.StudentLayout(),
         '/profile': (context) => const StudentProfilePage(),
-        
-      },
+        '/courses': (context) => const StudentCoursesScreen(),
+        '/course-details': (context) => const StudentCourseDetailsScreen(courseId: '',),
+        '/exams': (context) => const StudentExamsScreen(),
+        '/timetable': (context) => const StudentTimetableScreen(),
+        '/requests': (context) => const StudentDemandesPage(),     
+         },
     );
   }
 }

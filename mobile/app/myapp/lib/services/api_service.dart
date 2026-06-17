@@ -16,7 +16,9 @@ class ApiService {
   static final ApiService instance = ApiService._();
 
   // ── Config ────────────────────────────────────────────────────────────────────
-  static const String _baseUrl = 'http://192.168.1.211:5000'; // Android emulator
+  static const String _baseUrl = 'http://192.168.1.211:5000'; 
+  //tatic const String _baseUrl = 'http://10.0.2.2:5000'; // for emulator
+
   // static const String _baseUrl = 'http://localhost:5000'; // iOS
   static const Map<String, String> _jsonHeaders = {
     'Content-Type': 'application/json',
@@ -34,17 +36,38 @@ class ApiService {
     return fromJson(jsonDecode(response.body));
   }
 
-  // ── Generic GET List ──────────────────────────────────────────────────────────
-  Future<List<T>> getList<T>(
-    String path,
-    T Function(Map<String, dynamic>) fromJson,
-  ) async {
+  // ── Generic GET Raw ───────────────────────────────────────────────────────────
+  Future<dynamic> getRaw(String path) async {
     final headers = await _getAuthHeaders();
     final response = await http.get(Uri.parse('$_baseUrl$path'), headers: headers);
-
     _checkResponse(response);
-    final List<dynamic> data = jsonDecode(response.body);
-    return data.map((item) => fromJson(item)).toList();
+    return jsonDecode(response.body);
+  }
+
+  // ── Generic GET List ──────────────────────────────────────────────────────────
+  Future<List<T>> getList<T>(
+    String endpoint,
+    T Function(Map<String, dynamic>) fromJson,
+  ) async {
+    final response = await getRaw(endpoint);
+
+    final data = response;
+
+    final List list;
+
+    if (data is List) {
+      list = data;
+    } else if (data is Map<String, dynamic> && data['data'] is List) {
+      list = data['data'];
+    } else if (data is Map<String, dynamic> && data['cours'] is List) {
+      list = data['cours'];
+    } else {
+      throw Exception('Invalid list response from $endpoint');
+    }
+
+    return list
+        .map((item) => fromJson(Map<String, dynamic>.from(item)))
+        .toList();
   }
 
   // ── Generic POST ──────────────────────────────────────────────────────────────

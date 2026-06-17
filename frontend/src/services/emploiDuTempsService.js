@@ -1,7 +1,10 @@
 import axios from "axios";
 
-// Base URL of your backend
-const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000/emploi";
+// Base URL of your backend (must include /emploi because backend mounts examen router as /emploi)
+// Always build final URL explicitly to avoid baseUrl mismatches causing `/getAll` 404
+const API_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5000";
+
+
 
 // 🟢 Create an emploi du temps
 export const createEmploi = async (data, token) => {
@@ -13,7 +16,8 @@ export const createEmploi = async (data, token) => {
 
 // 🔍 Get all emplois du temps
 export const getAllEmplois = async (token) => {
-  const res = await axios.get(`${API_URL}/getAll`, {
+  const res = await axios.get(`${API_URL}/emploi/getAll`, {
+
     headers: { Authorization: `Bearer ${token}` },
   });
   return res.data;

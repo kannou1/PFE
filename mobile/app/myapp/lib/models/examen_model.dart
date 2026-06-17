@@ -27,19 +27,43 @@ class ExamenModel {
   });
 
   factory ExamenModel.fromJson(Map<String, dynamic> json) {
+    final rawTitre = json['titre'] ?? json['nom'] ?? json['title'];
+    final rawType = json['type'];
+
+    // Backend inconsistencies: sometimes fields are named differently.
+    final rawDate = json['dateExamen'] ?? json['date'];
+    final rawClasse = json['classe'] ?? json['classeId'] ?? json['classe_id'];
+    final rawCours = json['cours'] ?? json['coursId'];
+    final rawEnseignant = json['enseignant'] ?? json['enseignantId'];
+
+    final dateStr = rawDate?.toString();
+    final DateTime parsedDate =
+        (dateStr != null && dateStr.isNotEmpty)
+            ? DateTime.tryParse(dateStr) ?? DateTime.fromMillisecondsSinceEpoch(0)
+            : DateTime.fromMillisecondsSinceEpoch(0);
+
+    double parsedNoteTotale;
+    final rawNoteTotale = json['noteTotale'] ?? json['noteMax'] ?? json['noteMaxima'];
+    if (rawNoteTotale is num) {
+      parsedNoteTotale = rawNoteTotale.toDouble();
+    } else {
+      parsedNoteTotale = double.tryParse(rawNoteTotale?.toString() ?? '') ?? 20.0;
+    }
+
     return ExamenModel(
-      id: json['_id'] ?? json['id'] ?? '',
-      titre: json['titre'] as String,
-      description: json['description'],
-      type: json['type'] as String,
-      noteTotale: (json['noteTotale'] ?? 20.0) as double,
-      dateExamen: DateTime.parse(json['dateExamen'] as String),
-      classeId: json['classe'] as String,
-      coursId: json['cours'] as String,
-      enseignantId: json['enseignant'] as String,
-      etudiantsInscrits: _parseStringList(json['etudiantsInscrits']),
+      id: (json['_id'] ?? json['id'] ?? '').toString(),
+      titre: rawTitre?.toString() ?? '',
+      description: json['description']?.toString(),
+      type: rawType?.toString() ?? '',
+      noteTotale: parsedNoteTotale,
+      dateExamen: parsedDate,
+      classeId: rawClasse?.toString() ?? '',
+      coursId: rawCours?.toString() ?? '',
+      enseignantId: rawEnseignant?.toString() ?? '',
+      etudiantsInscrits: _parseStringList(json['etudiantsInscrits'] ?? json['etudiants']),
     );
   }
+
 
   Map<String, dynamic> toJson() => {
     '_id': id,

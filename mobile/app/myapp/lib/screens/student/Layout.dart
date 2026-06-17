@@ -10,6 +10,10 @@ import '../../models/user_model.dart';
 import '../../services/notification_service.dart';
 import 'notifications.dart';
 import 'package:EduNex/screens/student/profile.dart';
+import 'courses.dart';
+import 'exams.dart';
+import 'timetable.dart';
+
 
 const String _apiBase = 'http://192.168.1.211:5000';
 //const String _apiBase = 'http://10.0.2.2:5000'; // for emulator
@@ -190,13 +194,15 @@ class _StudentLayoutState extends State<StudentLayout> {
       case '':
         return const Center(child: Text('Dashboard'));
       case 'courses':
-        return const Center(child: Text('Courses'));
+        return const StudentCoursesScreen();
       case 'timetable':
-        return const Center(child: Text('Timetable'));
+        return const StudentTimetableScreen();
+
       case 'exams':
-        return const Center(child: Text('Exams & Notes'));
+        return const StudentExamsScreen();
       case 'attendance':
         return const Center(child: Text('Attendance'));
+
       case 'announcements':
         return const Center(child: Text('Announcements'));
       case 'requests':
@@ -209,8 +215,11 @@ class _StudentLayoutState extends State<StudentLayout> {
         return const Center(child: Text('EduBot'));
       case 'profile':
         return const StudentProfilePage();
+      //timetable case 
+      //  
       default:
         return const Center(child: Text('Dashboard'));
+
     }
   }
 
@@ -253,13 +262,16 @@ class _StudentLayoutState extends State<StudentLayout> {
                   child: Column(
                     children: [
                       _buildTopBar(isDark: isDark, isMobile: isMobile),
-                      Expanded(
+      Expanded(
                         child:
                             _loadingUser
                                 ? const Center(
                                   child: CircularProgressIndicator(),
                                 )
-                                : _buildPage(),
+                                : Theme(
+                                  data: Theme.of(context),
+                                  child: _buildPage(),
+                                ),
                       ),
                     ],
                   ),

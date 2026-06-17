@@ -8,15 +8,17 @@ class CoursService {
 
   // Get all cours
   Future<List<CoursModel>> getAllCours() async {
-    return ApiService.instance.getList(
+    final courses = await ApiService.instance.getList<CoursModel>(
       '/cours/getAllCours',
       CoursModel.fromJson,
     );
+
+    return courses;
   }
 
   // Get cours by ID
   Future<CoursModel> getCoursById(String id) async {
-    return ApiService.instance.get(
+    return ApiService.instance.get<CoursModel>(
       '/cours/getCoursById/$id',
       CoursModel.fromJson,
     );
@@ -24,7 +26,7 @@ class CoursService {
 
   // Create cours
   Future<CoursModel> createCours(Map<String, dynamic> data) async {
-    return ApiService.instance.post(
+    return ApiService.instance.post<CoursModel>(
       '/cours/createCours',
       data,
       CoursModel.fromJson,
@@ -33,7 +35,7 @@ class CoursService {
 
   // Update cours
   Future<CoursModel> updateCours(String id, Map<String, dynamic> data) async {
-    return ApiService.instance.put(
+    return ApiService.instance.put<CoursModel>(
       '/cours/updateCours/$id',
       data,
       CoursModel.fromJson,
@@ -45,4 +47,3 @@ class CoursService {
     await ApiService.instance.delete('/cours/deleteCours/$id');
   }
 }
-

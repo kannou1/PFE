@@ -46,7 +46,6 @@ const Timetable = () => {
           return;
         }
 
-        const scheduleData = {};
 
         const userStr = localStorage.getItem("user");
         const user = userStr ? JSON.parse(userStr) : null;
@@ -75,41 +74,72 @@ const Timetable = () => {
         }
          
         
+        const normalizeJourSemaine = (value) => {
+          if (!value) return null;
+          const v = String(value).trim().toLowerCase();
+          const map = {
+            lundi: "Lundi",
+            mardi: "Mardi",
+            mercredi: "Mercredi",
+            jeudi: "Jeudi",
+            vendredi: "Vendredi",
+            samedi: "Samedi",
+            dimanche: "Dimanche",
+          };
+          return map[v] || null;
+        };
+
+        const normalizeTimeHHmm = (value) => {
+          if (value == null) return "00:00";
+          const s = String(value).trim().replaceAll("h", ":");
+          const parts = s.split(":");
+          if (parts.length < 2) return "00:00";
+          const hh = String(parseInt(parts[0] || "0", 10)).padStart(2, "0");
+          const mm = String(parseInt(parts[1] || "0", 10)).padStart(2, "0");
+          return `${hh}:${mm}`;
+        };
+
         // Group seances by day
+        // Ensure we always render all 7 days, even if some have no sessions
+        const scheduleData = {};
+        days.forEach((d) => {
+          scheduleData[d] = [];
+        });
+
         filteredSeances.forEach((seance) => {
-          const day = seance.jourSemaine;
-          
+          const day = normalizeJourSemaine(seance.jourSemaine);
           if (!day) {
-            console.warn(`Seance ${seance._id} missing day`);
+            console.warn(`Seance ${seance._id} invalid jourSemaine:`, seance.jourSemaine);
             return;
           }
 
-          if (!scheduleData[day]) {
-            scheduleData[day] = [];
-          }
-
           const courseName = seance.cours?.nom || seance.cours?.name || "Course";
-          const instructorName = seance.cours?.enseignant 
-            ? `${seance.cours.enseignant.prenom || ""} ${seance.cours.enseignant.nom || ""}`.trim()
+
+          // Backend populates `enseignant` separately on the seance document.
+          const instructor = seance.enseignant;
+          const instructorName = instructor
+            ? `${instructor.prenom || ""} ${instructor.nom || ""}`.trim() || "Instructor"
             : "Instructor";
+
+          // Backend uses `typeCours` in the seance document.
+          const seanceType = seance.typeCours || seance.type || "Lecture";
 
           scheduleData[day].push({
             course: courseName,
+
             room: seance.salle || "Room TBA",
             instructor: instructorName || "Instructor",
             type: seance.typeCours || "Lecture",
             seanceId: seance._id,
             notes: seance.notes || "",
-            heureDebut: seance.heureDebut,
-            heureFin: seance.heureFin,
+            heureDebut: normalizeTimeHHmm(seance.heureDebut),
+            heureFin: normalizeTimeHHmm(seance.heureFin),
           });
         });
 
         // Sort sessions by start time for each day
-        Object.keys(scheduleData).forEach(day => {
-          scheduleData[day].sort((a, b) => {
-            return a.heureDebut.localeCompare(b.heureDebut);
-          });
+        days.forEach((day) => {
+          scheduleData[day].sort((a, b) => a.heureDebut.localeCompare(b.heureDebut));
         });
 
         console.log("Final schedule:", scheduleData);

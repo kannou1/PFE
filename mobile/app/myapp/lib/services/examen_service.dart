@@ -1,4 +1,6 @@
 import 'api_service.dart';
+import '../models/examen_model.dart';
+
 
 // ─── ExamenService ──────────────────────────────────────────────────────────────
 class ExamenService {
@@ -8,24 +10,25 @@ class ExamenService {
   // Create examen
   Future<void> createExamen(Map<String, dynamic> data) async {
     await ApiService.instance.post(
-      '/examens/create',
+      '/examen/create',
       data,
       (json) => json,
     );
   }
 
   // Get all examens
-  Future<List<dynamic>> getAllExamens() async {
+  Future<List<ExamenModel>> getAllExamens() async {
     return ApiService.instance.getList(
-      '/examens/getAll',
-      (json) => json,
+      '/examen/getAll',
+      (json) => ExamenModel.fromJson(json),
     );
   }
+
 
   // Get by ID
   Future<dynamic> getExamenById(String id) async {
     return ApiService.instance.get(
-      '/examens/getById/$id',
+      '/examen/getById/$id',
       (json) => json,
     );
   }
@@ -33,7 +36,7 @@ class ExamenService {
   // Update examen
   Future<void> updateExamen(String id, Map<String, dynamic> data) async {
     await ApiService.instance.put(
-      '/examens/update/$id',
+      '/examen/update/$id',
       data,
       (json) => json,
     );
@@ -41,13 +44,13 @@ class ExamenService {
 
   // Delete examen
   Future<void> deleteExamen(String id) async {
-    await ApiService.instance.delete('/examens/delete/$id');
+    await ApiService.instance.delete('/examen/delete/$id');
   }
 
   // Submit assignment
   Future<void> submitAssignment(String examenId, Map<String, dynamic> data) async {
     await ApiService.instance.post(
-      '/examens/submitAssignment/$examenId',
+      '/examen/submitAssignment/$examenId',
       data,
       (json) => json,
     );

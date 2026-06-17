@@ -9,7 +9,10 @@ class CoursModel {
   final int credits;
   final String semestre;
   final String? classeId;
+  final String? classeNom;
   final String? enseignantId;
+  final String? enseignantNom;
+
 
   const CoursModel({
     required this.id,
@@ -19,8 +22,11 @@ class CoursModel {
     required this.credits,
     required this.semestre,
     this.classeId,
+    this.classeNom,
     this.enseignantId,
+    this.enseignantNom,
   });
+
 
   factory CoursModel.fromJson(Map<String, dynamic> json) {
     return CoursModel(
@@ -31,7 +37,14 @@ class CoursModel {
       credits: json['credits'] as int,
       semestre: json['semestre'] as String,
       classeId: _parseString(json['classe']),
+      classeNom: json['classe'] != null && json['classe'] is Map<String, dynamic>
+          ? (json['classe']['nom'] as String?)
+          : null,
       enseignantId: _parseString(json['enseignant']),
+      enseignantNom: json['enseignant'] != null && json['enseignant'] is Map<String, dynamic>
+          ? ((json['enseignant']['prenom'] ?? '') as String?)
+          : null,
+
     );
   }
 

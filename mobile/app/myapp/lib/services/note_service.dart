@@ -6,18 +6,19 @@ class NoteService {
   NoteService._();
   static final NoteService instance = NoteService._();
 
-  // Get student notes
-  Future<List<NoteModel>> getStudentNotes(String studentId) async {
+  // Get notes for current student (requires etudiant role)
+  Future<List<NoteModel>> getStudentNotes() async {
     return ApiService.instance.getList(
-      '/notes/student/$studentId',
+      '/note/getForStudent',
       NoteModel.fromJson,
     );
   }
 
+
   // Get all notes (teacher)
   Future<List<NoteModel>> getAllNotes() async {
     return ApiService.instance.getList(
-      '/notes',
+      '/note/get',
       NoteModel.fromJson,
     );
   }
@@ -25,7 +26,7 @@ class NoteService {
   // Create/update note
   Future<NoteModel> saveNote(Map<String, dynamic> data) async {
     return ApiService.instance.post(
-      '/notes',
+      '/note/create',
       data,
       NoteModel.fromJson,
     );
@@ -33,7 +34,7 @@ class NoteService {
 
   // Delete note
   Future<void> deleteNote(String id) async {
-    await ApiService.instance.delete('/notes/$id');
+    await ApiService.instance.delete('/note/delete/$id');
   }
 }
 

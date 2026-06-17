@@ -9,7 +9,7 @@ class EmploiDuTempsService {
   // Get emploi for classe
   Future<List<EmploiDuTempsModel>> getClasseEmploi(String classeId) async {
     return ApiService.instance.getList(
-      '/emploiDuTemps/classe/$classeId',
+      '/emploi/classe/$classeId',
       EmploiDuTempsModel.fromJson,
     );
   }
@@ -17,7 +17,7 @@ class EmploiDuTempsService {
   // Get all emploi
   Future<List<EmploiDuTempsModel>> getAllEmploi() async {
     return ApiService.instance.getList(
-      '/emploiDuTemps',
+      '/emploi/getAll',
       EmploiDuTempsModel.fromJson,
     );
   }
@@ -25,7 +25,7 @@ class EmploiDuTempsService {
   // Create emploi slot
   Future<void> createEmploi(Map<String, dynamic> data) async {
     await ApiService.instance.post(
-      '/emploiDuTemps',
+      '/emploi/create',
       data,
       (json) => json,
     );

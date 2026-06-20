@@ -24,8 +24,8 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      GITOPS_REPOSITORY: kandidou391-dotcom/gitops-repo
-      IMAGE_OWNER: kandidou391-dotcom
+      GITOPS_REPOSITORY: dhouhaka/gitops-repo
+      IMAGE_OWNER: dhouhaka
 
     steps:
       - name: Checkout GitOps repository
@@ -81,5 +81,4 @@ jobs:
           fi
 
           git commit -m "chore: deploy ${{ github.event.workflow_run.head_sha }}"
-
           git push origin main
